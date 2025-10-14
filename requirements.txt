@@ -1,0 +1,413 @@
+CCTV Vulnerability Assessment Framework
+Supported CCTV Vendors
+The framework currently identifies and assesses:
+
+Hikvision
+Dahua
+Axis Communications
+Generic IP Cameras
+Other brands (extensible)
+CVE Database
+Built-in CVE database includes:
+
+CVE-2021-36260 (Hikvision Authentication Bypass)
+CVE-2017-7921 (Hikvision Backdoor)
+CVE-2021-33044 (Dahua Authentication Bypass)
+CVE-2020-9030 (Dahua Credential Disclosure)
+CVE-2018-10660 (Axis Information Disclosure)
+Common vulnerabilities (weak credentials, open ports)
+Machine Learning Features
+The ML model analyzes:
+
+Device vendor and model
+Firmware version/age
+Port configuration
+Authentication strength
+Historical vulnerability patterns
+Predictions:
+
+Vulnerability severity classification
+Risk score calculation
+Confidence levels
+Risk factor identification
+Customization
+Add New CVE
+Edit cctv_scanner.py or cctv_ml_model.py:
+
+python
+self.cve_database["YourVendor"] = [
+    {
+        "cve": "CVE-XXXX-XXXXX",
+        "severity": "CRITICAL",
+        "description": "Vulnerability description"
+    }
+]
+Add Exploitation Steps
+Edit cctv_ml_model.py:
+
+python
+self.exploitation_steps["CVE-XXXX-XXXXX"] = [
+    "Step 1: ...",
+    "Step 2: ...",
+    "Step 3: ..."
+]
+Add Mitigations
+Edit cctv_ml_model.py:
+
+python
+self.mitigations["CVE-XXXX-XXXXX"] = [
+    "Mitigation 1: ...",
+    "Mitigation 2: ...",
+    "Mitigation 3: ..."
+]
+Troubleshooting
+Issue: "Nmap not found"
+Solution: Install Nmap and ensure it's in system PATH
+
+bash
+# Ubuntu/Debian
+sudo apt-get install nmap
+
+# macOS
+brew install nmap
+
+# Verify installation
+nmap --version
+Issue: "Permission denied" on Linux
+Solution: Run with sudo for raw socket access
+
+bash
+sudo python cctv_integrated_app.py --scan 192.168.1.0/24
+Issue: Dashboard not starting
+Solution: Check if port 5000 is available
+
+bash
+# Check port usage
+netstat -tuln | grep 5000
+
+# Use different port
+# Edit cctv_dashboard.py and change port number
+Issue: Slow scanning
+Solution: Reduce IP range or port list
+
+bash
+# Scan smaller range
+python cctv_integrated_app.py --scan 192.168.1.1-192.168.1.50
+
+# Scan fewer ports
+python cctv_integrated_app.py --scan 192.168.1.0/24 --ports 80,554
+Performance Tips
+Use smaller IP ranges for faster scans
+Limit port scanning to common CCTV ports
+Run during off-peak hours to avoid network congestion
+Use multithreading for large networks (modify code)
+API Integration (Optional)
+Shodan Integration
+To integrate Shodan for global device discovery:
+
+python
+import shodan
+
+api = shodan.Shodan('YOUR_API_KEY')
+results = api.search('webcam')
+
+for result in results['matches']:
+    print(result['ip_str'])
+CVE Database API
+Integrate with NVD (National Vulnerability Database):
+
+python
+import requests
+
+def get_cve_details(cve_id):
+    url = f"https://services.nvd.nist.gov/rest/json/cve/1.0/{cve_id}"
+    response = requests.get(url)
+    return response.json()
+Advanced Features
+1. Automated Penetration Testing
+python
+# Enable in cctv_scanner.py
+scanner.enable_penetration_testing = True
+scanner.test_default_credentials(device_ip)
+2. Network Traffic Analysis
+python
+# Add packet capture capability
+import scapy.all as scapy
+
+def capture_traffic(interface):
+    packets = scapy.sniff(interface=interface, count=100)
+    return packets
+3. Continuous Monitoring
+python
+# Schedule regular scans
+import schedule
+import time
+
+def job():
+    app = IntegratedCCTVAssessment()
+    app.full_assessment("192.168.1.0/24")
+
+schedule.every().day.at("02:00").do(job)
+
+while True:
+    schedule.run_pending()
+    time.sleep(60)
+Export Formats
+JSON Format
+json
+{
+  "scan_info": {
+    "target": "192.168.1.0/24",
+    "start_time": "2024-01-01T12:00:00",
+    "end_time": "2024-01-01T12:30:00"
+  },
+  "devices": [...],
+  "vulnerabilities": [...],
+  "ml_predictions": [...],
+  "recommendations": [...]
+}
+CSV Format
+Separate CSV files for:
+
+Devices (IP, vendor, model, firmware, ports)
+Vulnerabilities (IP, CVE, severity, description)
+Compliance and Best Practices
+Before Scanning
+✅ Obtain written authorization
+✅ Define scope of testing
+✅ Schedule testing window
+✅ Notify stakeholders
+During Scanning
+✅ Monitor system performance
+✅ Document all findings
+✅ Avoid service disruption
+✅ Keep logs of all activities
+After Scanning
+✅ Generate comprehensive report
+✅ Prioritize vulnerabilities
+✅ Provide remediation guidance
+✅ Follow up on fixes
+Reporting
+Executive Summary
+python
+app.generate_detailed_report()
+Includes:
+
+Total devices scanned
+Vulnerabilities by severity
+Device vendor breakdown
+Top critical issues
+Priority recommendations
+Technical Report
+Export detailed JSON for technical teams:
+
+python
+app.export_results("technical_report.json")
+Integration with Other Tools
+1. Metasploit Integration
+bash
+# Export results for Metasploit
+python cctv_integrated_app.py --scan 192.168.1.0/24 --output metasploit_targets.json
+2. SIEM Integration
+python
+# Send results to SIEM
+import syslog
+
+def send_to_siem(vulnerability):
+    syslog.syslog(syslog.LOG_ALERT, f"CCTV Vulnerability: {vulnerability}")
+3. Ticketing System Integration
+python
+# Create tickets for vulnerabilities
+import requests
+
+def create_ticket(vulnerability):
+    ticket_data = {
+        "title": f"CCTV Vulnerability: {vulnerability['cve']}",
+        "severity": vulnerability['severity'],
+        "description": vulnerability['description']
+    }
+    # POST to ticketing API
+Contributing
+To extend the framework:
+
+Add new scanner modules in cctv_scanner.py
+Enhance ML model in cctv_ml_model.py
+Improve dashboard in cctv_dashboard.py
+Update CVE database regularly
+License
+This tool is provided for educational and authorized security testing purposes only.
+
+Disclaimer
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. USE AT YOUR OWN RISK. The authors are not responsible for any misuse or damage caused by this program.
+
+Support
+For issues, questions, or contributions:
+
+Check documentation
+Review troubleshooting section
+Test in isolated environment first
+Version History
+v1.0 - Initial release
+Basic scanning functionality
+ML-based vulnerability prediction
+Web dashboard
+Comprehensive reporting
+Future Enhancements
+Planned features:
+
+ Shodan API integration
+ Real-time monitoring mode
+ Mobile app dashboard
+ Automated remediation scripts
+ Cloud-based scanning
+ API endpoints for integration
+ Enhanced ML models
+ Support for more vendors
+Quick Reference Commands
+bash
+# Basic scan
+python cctv_integrated_app.py --scan 192.168.1.0/24
+
+# Custom ports
+python cctv_integrated_app.py --scan 192.168.1.0/24 --ports 80,554,8000
+
+# Start dashboard
+python cctv_integrated_app.py --dashboard
+
+# Analyze results
+python cctv_integrated_app.py --analyze results.json
+
+# Help
+python cctv_integrated_app.py --help
+Remember: Always conduct security testing ethically and legally with proper authorization. Overview Comprehensive automated framework for Vulnerability Assessment and Penetration Testing of CCTV cameras and DVR systems.
+
+Features
+✅ Automated vulnerability scanning using Nmap
+✅ Device fingerprinting and identification
+✅ CVE database integration
+✅ Machine Learning-based vulnerability prediction
+✅ Exploitation methodology mapping
+✅ Security recommendations engine
+✅ Interactive web dashboard
+✅ Comprehensive reporting (JSON, CSV)
+✅ Scalable architecture
+Requirements
+System Requirements
+Python 3.8 or higher
+Nmap installed on system
+Internet connection (for Shodan integration - optional)
+Python Dependencies
+txt
+# requirements.txt
+flask==2.3.0
+requests==2.31.0
+python-nmap==0.7.1
+pandas==2.0.0
+numpy==1.24.0
+scikit-learn==1.3.0
+joblib==1.3.0
+folium==0.14.0
+geopy==2.3.0
+Installation
+Step 1: Install System Dependencies
+For Ubuntu/Debian:
+
+bash
+sudo apt-get update
+sudo apt-get install python3 python3-pip nmap
+For macOS:
+
+bash
+brew install python3 nmap
+For Windows:
+
+Install Python from python.org
+Install Nmap from nmap.org
+Add Nmap to system PATH
+Step 2: Install Python Dependencies
+bash
+pip install -r requirements.txt
+File Structure
+cctv-security-framework/
+│
+├── cctv_scanner.py              # Main scanner module
+├── cctv_ml_model.py             # Machine learning module
+├── cctv_dashboard.py            # Web dashboard
+├── cctv_integrated_app.py       # Integrated CLI application
+├── requirements.txt             # Python dependencies
+├── README.md                    # This file
+│
+├── templates/                   # Dashboard templates
+│   └── dashboard.html
+│
+└── output/                      # Generated reports (auto-created)
+    ├── cctv_scan_results.json
+    ├── discovered_devices.csv
+    └── identified_vulnerabilities.csv
+Usage
+1. Quick Start - Scan Local Network
+bash
+python cctv_integrated_app.py --scan 192.168.1.0/24
+2. Scan with Custom Ports
+bash
+python cctv_integrated_app.py --scan 192.168.1.0/24 --ports 80,554,8000,8080,37777
+3. Analyze Existing Results
+bash
+python cctv_integrated_app.py --analyze cctv_assessment_20240101_120000.json
+4. Start Web Dashboard
+bash
+python cctv_integrated_app.py --dashboard
+Then open browser to: http://localhost:5000
+
+5. Export Results with Custom Filename
+bash
+python cctv_integrated_app.py --scan 10.0.0.0/24 --output my_scan_results.json
+Individual Module Usage
+Scanner Only
+python
+from cctv_scanner import CCTVScanner
+
+scanner = CCTVScanner()
+devices = scanner.scan_ip_range("192.168.1.0/24")
+scanner.export_results()
+ML Model Only
+python
+from cctv_ml_model import CCTVVulnerabilityML
+
+ml_model = CCTVVulnerabilityML()
+ml_model.train_model()
+
+device = {
+    "ip": "192.168.1.100",
+    "vendor": "Hikvision",
+    "ports": [80, 554]
+}
+
+prediction = ml_model.predict_vulnerability(device)
+print(prediction)
+Dashboard Only
+bash
+python cctv_dashboard.py
+Output Files
+The framework generates several output files:
+
+cctv_assessment_[timestamp].json - Complete assessment results
+discovered_devices.csv - List of all discovered devices
+identified_vulnerabilities.csv - List of all vulnerabilities
+cctv_ml_model.pkl - Trained ML model (auto-generated)
+Dashboard Features
+The web dashboard provides:
+
+Real-time statistics
+Vulnerability severity charts
+Device vendor distribution
+Interactive device table
+Vulnerability details table
+Auto-refresh capability
+Security Considerations
+⚠️ IMPORTANT: This tool is for AUTHORIZED SECURITY TESTING ONLY
+
+Only scan networks you own or have explicit permission to test
+Scanning unauthorized networks is illegal
+Use responsibly and ethically
+Follow all applicable laws and regulations
