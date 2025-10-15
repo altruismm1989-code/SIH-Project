@@ -73,9 +73,6 @@ Below is a suggested setup guide. Adjust paths, versions, or instructions to you
 pip install -r requirements.txt
 
 ---
-## Contact
-
-We'ld love to hear you all !
 
 ## Contact
 
