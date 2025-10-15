@@ -10,11 +10,6 @@ Presented by Team Dharohar:
 - [Features](#features)  
 - [Architecture & Modules](#architecture--modules)  
 - [Installation & Setup](#installation--setup)  
-- [Usage](#usage)  
-- [Data & Models](#data--models)  
-- [Evaluation / Results](#evaluation--results)  
-- [Limitations & Future Work](#limitations--future-work)  
-- [Contributing](#contributing)  
 - [License](#license)  
 - [Contact](#contact)  
 
@@ -77,4 +72,19 @@ Below is a suggested setup guide. Adjust paths, versions, or instructions to you
    cd SIH-Project
 pip install -r requirements.txt
 
-© 2025 Team Dharohar / Vaishali Tripathi
+---
+## Contact
+
+We'ld love to hear you all !
+
+## Contact
+
+We'd love to hear from you!
+
+- [Vaishali Tripathi](https://www.linkedin.com/in/vaishali-tripathi-545783225/)
+- [Siddharth Yadav](https://www.linkedin.com/in/siddharth-yadav-671244206/)
+
+
+---
+## License
+© 2025 Team Dharohar
